@@ -178,6 +178,7 @@ class MetaAI:
         response = self.session.post(url, headers=headers, data=payload, stream=stream)
         if not stream:
             raw_response = response.text
+            print(raw_response)
             last_streamed_response = self.extract_last_response(raw_response)
             if not last_streamed_response:
                 return self.retry(message, stream=stream, attempts=attempts)
@@ -375,6 +376,7 @@ class MetaAI:
         }
 
         response = self.session.post(url, headers=headers, data=payload)
+        print(response.text)
         response_json = response.json()
         message = response_json.get("data", {}).get("message", {})
         search_results = (
