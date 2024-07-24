@@ -98,7 +98,8 @@ class MetaAI:
         }
 
         response = self.session.post(url, headers=headers, data=payload)
-
+        print(str(response))
+        print(response.text)
         try:
             auth_json = response.json()
         except json.JSONDecodeError:
