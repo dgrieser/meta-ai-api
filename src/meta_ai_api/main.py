@@ -102,7 +102,10 @@ class MetaAI:
             "x-fb-friendly-name": "useAbraAcceptTOSForTempUserMutation",
         }
 
+        print('Requesting token')
         response = self.session.post(url, headers=headers, data=payload)
+
+        print(response.text)
 
         try:
             auth_json = response.json()
@@ -145,7 +148,9 @@ class MetaAI:
             Exception: If unable to obtain a valid response after several attempts.
         """
         if not self.is_authed:
+            print('Getting access token')
             self.access_token = self.get_access_token()
+            print('Got access token ' + self.access_token)
             auth_payload = {"access_token": self.access_token}
             url = "https://graph.meta.ai/graphql?locale=user"
 
@@ -189,9 +194,11 @@ class MetaAI:
             self.session = requests.Session()
             self.session.proxies = self.proxy
 
+        print('Running post')
         response = self.session.post(url, headers=headers, data=payload, stream=stream)
         if not stream:
             raw_response = response.text
+            print(raw_response)
             last_streamed_response = self.extract_last_response(raw_response)
             if not last_streamed_response:
                 return self.retry(message, stream=stream, attempts=attempts)
@@ -201,7 +208,9 @@ class MetaAI:
 
         else:
             lines = response.iter_lines()
-            is_error = json.loads(next(lines))
+            line = next(lines)
+            print(line)
+            is_error = json.loads(line)
             if len(is_error.get("errors", [])) > 0:
                 return self.retry(message, stream=stream, attempts=attempts)
             return self.stream_response(lines)
